@@ -323,7 +323,7 @@ def alphabeta(board, depth, player, first_player, player1_set, player2_set, play
                                             player5_set, player6_set)
         return board_score, None
 
-    set_pieces = assign_set(player, player1_set, player2_set, player3_set, player4_set, player5_set, player6_set)
+    pieces_set = assign_set(player, player1_set, player2_set, player3_set, player4_set, player5_set, player6_set)
 
     dest_set = assign_dest_set(player, player1_dest, player2_dest, player3_dest, player4_dest,
                                player5_dest, player6_dest)
@@ -331,7 +331,7 @@ def alphabeta(board, depth, player, first_player, player1_set, player2_set, play
     invalid_set = assign_invalid_set(player, player1_inv, player2_inv, player3_inv,
                                      player4_inv, player5_inv, player6_inv)
 
-    valid_moves = find_all_legal_moves(board_copy, set_pieces, dest_set, invalid_set)
+    valid_moves = find_all_legal_moves(board_copy, pieces_set, dest_set, invalid_set)
 
     scores = []
     moves = []
@@ -341,7 +341,7 @@ def alphabeta(board, depth, player, first_player, player1_set, player2_set, play
         for move in valid_moves:
 
             board_copy_again = copy.copy(board_copy)
-            new_board, new_set_pieces = do_move(board_copy_again, move, set_pieces)
+            new_board, new_set_pieces = do_move(board_copy_again, move, pieces_set)
 
             player1_set, player2_set, player3_set, player4_set, player5_set, player6_set = \
                 update_player_set(new_set_pieces, player, player1_set, player2_set, player3_set, player4_set,
@@ -373,7 +373,7 @@ def alphabeta(board, depth, player, first_player, player1_set, player2_set, play
         for move in valid_moves:
 
             board_copy_again = copy.copy(board_copy)
-            new_board, new_set_pieces = do_move(board_copy_again, move, set_pieces)
+            new_board, new_set_pieces = do_move(board_copy_again, move, pieces_set)
 
             player1_set, player2_set, player3_set, player4_set, player5_set, player6_set = \
                 update_player_set(new_set_pieces, player, player1_set, player2_set, player3_set, player4_set,
@@ -402,7 +402,7 @@ def alphabeta(board, depth, player, first_player, player1_set, player2_set, play
     return scores[min_score_index], worst_opponent_move
 
 
-def calculate_board_score(first_player, p1_pieces, p2_pieces, p3_pieces, p4_pieces, p5_pieces, p6_pieces):
+def calculate_board_score(player_turn, p1_pieces, p2_pieces, p3_pieces, p4_pieces, p5_pieces, p6_pieces):
     p1_avg_distance = find_avg_distance(p1_pieces, player1_dest, 16, 12)
     p2_avg_distance = find_avg_distance(p2_pieces, player2_dest, 4, 0)
     p3_avg_distance = find_avg_distance(p3_pieces, player3_dest, 4, 24)
@@ -410,36 +410,36 @@ def calculate_board_score(first_player, p1_pieces, p2_pieces, p3_pieces, p4_piec
     p5_avg_distance = find_avg_distance(p5_pieces, player5_dest, 0, 12)
     p6_avg_distance = find_avg_distance(p6_pieces, player6_dest, 12, 24)
     score = 0
-    if first_player == 1:
+    if player_turn == 1:
         pturn_avg_distance = p1_avg_distance
         score = ((p2_avg_distance - pturn_avg_distance) +
                  (p3_avg_distance - pturn_avg_distance)
                  )
-    elif first_player == 2:
+    elif player_turn == 2:
         pturn_avg_distance = p2_avg_distance
         score = ((p1_avg_distance - pturn_avg_distance) +
                  (p3_avg_distance - pturn_avg_distance)
                  )
-    elif first_player == 3:
+    elif player_turn == 3:
         pturn_avg_distance = p3_avg_distance
         score = ((p2_avg_distance - pturn_avg_distance) +
                  (p1_avg_distance - pturn_avg_distance)
                  )
-    elif first_player == 4:
+    elif player_turn == 4:
         pturn_avg_distance = p4_avg_distance
         score = ((p2_avg_distance - pturn_avg_distance) +
                  (p3_avg_distance - pturn_avg_distance) +
                  (p1_avg_distance - pturn_avg_distance) +
                  (p5_avg_distance - pturn_avg_distance) +
                  (p6_avg_distance - pturn_avg_distance))
-    elif first_player == 5:
+    elif player_turn == 5:
         pturn_avg_distance = p5_avg_distance
         score = ((p2_avg_distance - pturn_avg_distance) +
                  (p3_avg_distance - pturn_avg_distance) +
                  (p4_avg_distance - pturn_avg_distance) +
                  (p1_avg_distance - pturn_avg_distance) +
                  (p6_avg_distance - pturn_avg_distance))
-    elif first_player == 6:
+    elif player_turn == 6:
         pturn_avg_distance = p6_avg_distance
         score = ((p2_avg_distance - pturn_avg_distance) +
                  (p3_avg_distance - pturn_avg_distance) +
