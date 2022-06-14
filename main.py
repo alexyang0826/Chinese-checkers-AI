@@ -24,8 +24,10 @@ p5_depth = 1
 p6_depth = 1
 # decide the max players
 MAX_PLAYERS = [2]
-
-
+# decide algorithm to use 0:alphabeta 1:greedy
+ALGORITHM = [1,1,1,1,1,1]
+# weight of start_dis for greedy
+WEIGHT = [0.1,1,1,1,1,1]
 def build_sets():
     player1_set = [[0, 12], [1, 11], [1, 13], [2, 10], [2, 12], [2, 14], [3, 9], [3, 11], [3, 13], [3, 15]]  # 1
     player2_set = [[9, 21], [10, 20], [10, 22], [11, 19], [11, 21], [11, 23], [12, 18], [12, 20], [12, 22],
@@ -161,7 +163,7 @@ def main():
                 # print("Player", player_turn)
 
                 # consider the pieces of the player of this turn
-                set_pieces = assign_set(player_turn, player1_set, player2_set, player3_set, player4_set,
+                pieces_set = assign_set(player_turn, player1_set, player2_set, player3_set, player4_set,
                                         player5_set, player6_set)
 
                 # identify homes of the player of this turn
@@ -175,14 +177,14 @@ def main():
                                            player5_dest, player6_dest)
 
                 # find all legal moves given a piece set of a player
-                all_legal_moves = find_all_legal_moves(board, set_pieces, dest_set, invalid_set)
+                all_legal_moves = find_all_legal_moves(board, pieces_set, dest_set, invalid_set)
 
                 # choose the best move
                 if first_round:
                     best_move_index = random.randint(0, len(all_legal_moves) - 1)
                     best_move = all_legal_moves[best_move_index]
                 else:
-                    best_move = find_best_move(board, all_legal_moves, dest_set, player_turn, set_pieces,
+                    best_move = find_best_move(board, all_legal_moves, dest_set, player_turn, pieces_set,
                                                player1_set, player2_set, player3_set, player4_set, player5_set,
                                                player6_set)
                 # print("player:", player_turn, "best move:", best_move)
@@ -203,17 +205,17 @@ def main():
                 pg.display.update()
 
                 # do the best move
-                board, set_pieces = do_move(board, best_move, set_pieces)
+                board, pieces_set = do_move(board, best_move, pieces_set)
 
                 # update set
                 player1_set, player2_set, player3_set, player4_set, player5_set, player6_set = \
-                    update_player_set(set_pieces, player_turn, player1_set, player2_set, player3_set, player4_set,
+                    update_player_set(pieces_set, player_turn, player1_set, player2_set, player3_set, player4_set,
                                       player5_set, player6_set)
 
                 # update the board
 
                 # check if the player has won
-                game_over = check_win(set_pieces, dest_set)
+                game_over = check_win(pieces_set, dest_set)
 
                 if game_over:
 
@@ -265,33 +267,41 @@ def find_best_move(board, all_legal_moves, dest_set, player_turn, pieces_set, pl
     try:
 
         if player_turn == 1:
-            score, best_move = alphabeta(board, p1_depth, player_turn, player_turn, player1_set, player2_set,
+            if ALGORITHM[0] == 0:
+                score, best_move = alphabeta(board, p1_depth, player_turn, player_turn, player1_set, player2_set,
                                          player3_set, player4_set, player5_set, player6_set, -10000, 10000)
-            # best_move = greedy(board, all_legal_moves, obj_set, player_turn)
+            if ALGORITHM[0] == 1:
+                best_move = greedy(board, all_legal_moves, dest_set, player_turn, WEIGHT[0])
         elif player_turn == 2:
-
-            score, best_move = alphabeta(board, p2_depth, player_turn, player_turn, player1_set, player2_set,
+            if ALGORITHM[1] == 0:
+                score, best_move = alphabeta(board, p2_depth, player_turn, player_turn, player1_set, player2_set,
                                          player3_set, player4_set, player5_set, player6_set, -10000, 10000)
-            # best_move = greedy(board, all_legal_moves, obj_set, player_turn)
+            if ALGORITHM[1] == 1:
+                best_move = greedy(board, all_legal_moves, dest_set, player_turn, WEIGHT[1])
         elif player_turn == 3:
-            # score, best_move = minimax(board, p4_depth, player_turn, player_turn, player1_set, player2_set,
-            #                            player3_set, player4_set, player5_set, player6_set)
-            score, best_move = alphabeta(board, p3_depth, player_turn, player_turn, player1_set, player2_set,
-                                         player3_set, player4_set, player5_set, player6_set, -10000, 10000)
-            # best_move = greedy(board, all_legal_moves, obj_set, player_turn)
+            if ALGORITHM[2] == 0:
+                score, best_move = alphabeta(board, p3_depth, player_turn, player_turn, player1_set, player2_set,
+                                             player3_set, player4_set, player5_set, player6_set, -10000, 10000)
+            if ALGORITHM[2] == 1:
+                best_move = greedy(board, all_legal_moves, dest_set, player_turn, WEIGHT[2])
         elif player_turn == 4:
-            # score, best_move = alphabeta(board, p4_depth, player_turn, player_turn, player1_set, player2_set,
-            #                            player3_set, player4_set, player5_set, player6_set)
-            best_move = greedy(board, all_legal_moves, dest_set, player_turn)
+            if ALGORITHM[3] == 0:
+                score, best_move = alphabeta(board, p4_depth, player_turn, player_turn, player1_set, player2_set,
+                                             player3_set, player4_set, player5_set, player6_set, -10000, 10000)
+            if ALGORITHM[3] == 1:
+                best_move = greedy(board, all_legal_moves, dest_set, player_turn, WEIGHT[3])
         elif player_turn == 5:
-            # score, best_move = alphabeta(board, p5_depth, player_turn, player_turn, player1_set, player2_set,
-            #                            player3_set, player4_set, player5_set, player6_set)
-            best_move = greedy(board, all_legal_moves, dest_set, player_turn)
+            if ALGORITHM[4] == 0:
+                score, best_move = alphabeta(board, p5_depth, player_turn, player_turn, player1_set, player2_set,
+                                             player3_set, player4_set, player5_set, player6_set, -10000, 10000)
+            if ALGORITHM[4] == 1:
+                best_move = greedy(board, all_legal_moves, dest_set, player_turn, WEIGHT[4])
         elif player_turn == 6:
-            # score, best_move = alphabeta(board, p6_depth, player_turn, player_turn, player1_set, player2_set,
-            #                            player3_set, player4_set, player5_set, player6_set)
-            best_move = greedy(board, all_legal_moves, dest_set, player_turn)
-
+            if ALGORITHM[5] == 0:
+                score, best_move = alphabeta(board, p6_depth, player_turn, player_turn, player1_set, player2_set,
+                                             player3_set, player4_set, player5_set, player6_set, -10000, 10000)
+            if ALGORITHM[5] == 1:
+                best_move = greedy(board, all_legal_moves, dest_set, player_turn, WEIGHT[5])
     except Exception:
         return
 
@@ -389,7 +399,6 @@ def alphabeta(board, depth, player, first_player, player1_set, player2_set, play
             scores.append(score)
             moves.append(move)
 
-
             beta = min(score, beta)
             if beta <= alpha:
                 break
@@ -475,12 +484,12 @@ def find_avg_distance(p_pieces, p_dest, p_default_x, p_default_y):
 
         total_distance = total_distance + distance_diag
 
-    avg_distance = total_distance
+    avg_distance = total_distance / 10
 
     return avg_distance
 
 
-def greedy(board, all_legal_moves, dest_set, player_turn):
+def greedy(board, all_legal_moves, dest_set, player_turn, weight):
     dest_available = []
 
     for pos in dest_set:
@@ -488,7 +497,7 @@ def greedy(board, all_legal_moves, dest_set, player_turn):
         if board[x][y] != player_turn:
             dest_available.append([x, y])
 
-    max_distance_metric = 0
+    max_score = float('-inf')
     move_index = 0
     best_move = 0
 
@@ -496,6 +505,7 @@ def greedy(board, all_legal_moves, dest_set, player_turn):
 
         [start_x, start_y] = move[0]
         [end_x, end_y] = move[1]
+
 
         for dest in dest_available:
             [dest_x, dest_y] = dest
@@ -507,17 +517,39 @@ def greedy(board, all_legal_moves, dest_set, player_turn):
             start_diag = math.sqrt(((dest_x - start_x) ** 2) + ((transfered_dest_y - transfered_x) ** 2))
             end_diag = math.sqrt(((dest_x - end_x) ** 2) + ((transfered_dest_y - transfered_y) ** 2))
 
-            distance_travel = start_diag - end_diag
-            distance_metric = distance_travel + start_diag * 0.5
 
-            if distance_metric > max_distance_metric:
+            distance_travel = start_diag - end_diag
+            evaluate_score = distance_travel + start_diag * weight
+
+
+            if evaluate_score > max_score:
                 best_move = move_index
-                max_distance_metric = distance_metric
+                max_score = evaluate_score
 
         move_index += 1
 
     return all_legal_moves[best_move]
 
+def calculate_greedy(p_pieces, p_dest, p_default_x, p_default_y):
+    total_distance = 0
+    dest_x = p_default_x
+    dest_y = p_default_y
+    for dest_piece in p_dest:
+        if dest_piece not in p_pieces:
+            [dest_x, dest_y] = dest_piece
+            break
 
+    for piece in p_pieces:
+        [x, y] = piece
+
+        transfered_y = y / math.sqrt(2)
+        transferd_dest_y = dest_y / math.sqrt(2)
+
+        distance_diag = math.sqrt(((dest_x - x) ** 2) + ((transferd_dest_y - transfered_y) ** 2))
+
+        total_distance = total_distance + distance_diag
+
+    avg_distance = total_distance
+    return avg_distance
 if __name__ == '__main__':
     main()
