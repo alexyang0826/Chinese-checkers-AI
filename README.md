@@ -8,7 +8,7 @@ pygame==2.1.2
 ```
 
 ## Board
-<img src="https://user-images.githubusercontent.com/80531783/173523700-d0251df7-b5e9-4344-aa97-7b030035c222.png" width=50% height=50%>
+<img src="board.png" width=50% height=50%>
 
 ## Algorithm
 - Greedy
