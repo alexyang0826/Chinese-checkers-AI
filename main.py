@@ -517,9 +517,34 @@ def greedy(board, all_legal_moves, dest_set, player_turn, weight):
             start_diag = math.sqrt(((dest_x - start_x) ** 2) + ((transfered_dest_y - transfered_x) ** 2))
             end_diag = math.sqrt(((dest_x - end_x) ** 2) + ((transfered_dest_y - transfered_y) ** 2))
 
+            piece_in_dest = []
+            if player_turn == 1:
+                piece_in_dest = [i for i in player1_set if i in player1_dest]
+                if move[1] in player1_dest:
+                    piece_in_dest.append([0,0])
+            elif player_turn == 2:
+                piece_in_dest = [i for i in player2_set if i in player2_dest]
+                if move[1] in player2_dest:
+                    piece_in_dest.append([0,0])
+            elif player_turn == 3:
+                piece_in_dest = [i for i in player3_set if i in player3_dest]
+                if move[1] in player3_dest:
+                    piece_in_dest.append([0,0])
+            elif player_turn == 4:
+                piece_in_dest = [i for i in player4_set if i in player4_dest]
+                if move[1] in player4_dest:
+                    piece_in_dest.append([0,0])
+            elif player_turn == 5:
+                piece_in_dest = [i for i in player5_set if i in player5_dest]
+                if move[1] in player5_dest:
+                    piece_in_dest.append([0,0])
+            elif player_turn == 6:
+                piece_in_dest = [i for i in player6_set if i in player6_dest]
+                if move[1] in player6_dest:
+                    piece_in_dest.append([0,0])
 
             distance_travel = start_diag - end_diag
-            evaluate_score = distance_travel + start_diag * weight
+            evaluate_score = distance_travel + start_diag * weight + len(piece_in_dest) * 100
 
 
             if evaluate_score > max_score:
