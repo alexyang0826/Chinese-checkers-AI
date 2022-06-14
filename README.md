@@ -13,3 +13,5 @@ pygame==2.1.2
 ## Algorithm
 - Greedy
 - Alpha-beta
+
+## Eexperiment results
