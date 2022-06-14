@@ -336,7 +336,7 @@ def alphabeta(board, depth, player, first_player, player1_set, player2_set, play
     scores = []
     moves = []
 
-    if player in MAX_PLAYERS:
+    if player not in MAX_PLAYERS:
 
         for move in valid_moves:
 
@@ -411,41 +411,47 @@ def calculate_board_score(player_turn, p1_pieces, p2_pieces, p3_pieces, p4_piece
     p6_avg_distance = find_avg_distance(p6_pieces, player6_dest, 12, 24)
     score = 0
     if player_turn == 1:
+        piece_in_dest = [i for i in p1_pieces if i in player1_dest]
         pturn_avg_distance = p1_avg_distance
         score = ((p2_avg_distance - pturn_avg_distance) +
                  (p3_avg_distance - pturn_avg_distance)
-                 )
+                 ) + len(piece_in_dest) * 100
     elif player_turn == 2:
+        piece_in_dest = [i for i in p2_pieces if i in player2_dest]
         pturn_avg_distance = p2_avg_distance
         score = ((p1_avg_distance - pturn_avg_distance) +
                  (p3_avg_distance - pturn_avg_distance)
-                 )
+                 ) + len(piece_in_dest) * 100
     elif player_turn == 3:
+        piece_in_dest = [i for i in p3_pieces if i in player3_dest]
         pturn_avg_distance = p3_avg_distance
         score = ((p2_avg_distance - pturn_avg_distance) +
                  (p1_avg_distance - pturn_avg_distance)
-                 )
+                 ) + len(piece_in_dest) * 100
     elif player_turn == 4:
+        piece_in_dest = [i for i in p4_pieces if i in player4_dest]
         pturn_avg_distance = p4_avg_distance
         score = ((p2_avg_distance - pturn_avg_distance) +
                  (p3_avg_distance - pturn_avg_distance) +
                  (p1_avg_distance - pturn_avg_distance) +
                  (p5_avg_distance - pturn_avg_distance) +
-                 (p6_avg_distance - pturn_avg_distance))
+                 (p6_avg_distance - pturn_avg_distance)) + len(piece_in_dest) * 100
     elif player_turn == 5:
+        piece_in_dest = [i for i in p5_pieces if i in player5_dest]
         pturn_avg_distance = p5_avg_distance
         score = ((p2_avg_distance - pturn_avg_distance) +
                  (p3_avg_distance - pturn_avg_distance) +
                  (p4_avg_distance - pturn_avg_distance) +
                  (p1_avg_distance - pturn_avg_distance) +
-                 (p6_avg_distance - pturn_avg_distance))
+                 (p6_avg_distance - pturn_avg_distance)) + len(piece_in_dest) * 100
     elif player_turn == 6:
+        piece_in_dest = [i for i in p6_pieces if i in player6_dest]
         pturn_avg_distance = p6_avg_distance
         score = ((p2_avg_distance - pturn_avg_distance) +
                  (p3_avg_distance - pturn_avg_distance) +
                  (p4_avg_distance - pturn_avg_distance) +
                  (p5_avg_distance - pturn_avg_distance) +
-                 (p1_avg_distance - pturn_avg_distance))
+                 (p1_avg_distance - pturn_avg_distance)) + len(piece_in_dest) * 100
 
     return score
 
