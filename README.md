@@ -15,4 +15,4 @@ pygame==2.1.2
 - Alpha-beta
 
 ## Eexperiment results
-<img src="board.png" width = 50%>
+<img src="result.png" width = 50%>
