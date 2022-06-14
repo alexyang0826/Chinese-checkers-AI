@@ -2,7 +2,6 @@
 import sys
 from pygame.locals import *
 import random
-# from run1 import *
 from board import *
 from gui import *
 import copy
@@ -11,23 +10,23 @@ import copy
 restart_time = 0
 move_time = 0
 # rounds to play
-ROUND = 1000
+ROUND = 50
 
-NUM_OF_PLAYERS = 2
+NUM_OF_PLAYERS = 6
 
 # depth for alphabeta search
 p1_depth = 1
 p2_depth = 1
-p3_depth = 1
+p3_depth = 2
 p4_depth = 1
 p5_depth = 1
 p6_depth = 1
 # decide the max players
-MAX_PLAYERS = [2]
+MIN_PLAYERS = [2]
 # decide algorithm to use 0:alphabeta 1:greedy
-ALGORITHM = [1,1,1,1,1,1]
+ALGORITHM = [0,0,0,1,1,1]
 # weight of start_dis for greedy
-WEIGHT = [0.1,1,1,1,1,1]
+WEIGHT = [1,1,1,0.5,0.5,0.5]
 def build_sets():
     player1_set = [[0, 12], [1, 11], [1, 13], [2, 10], [2, 12], [2, 14], [3, 9], [3, 11], [3, 13], [3, 15]]  # 1
     player2_set = [[9, 21], [10, 20], [10, 22], [11, 19], [11, 21], [11, 23], [12, 18], [12, 20], [12, 22],
@@ -111,6 +110,7 @@ def main():
         for event in pg.event.get():
 
             if event.type == QUIT:
+                print("FINISH---------")
                 pg.quit()
                 sys.exit()
 
@@ -249,7 +249,7 @@ def main():
                     pg.event.post(event)
 
                     # pg.display.update()
-
+    print("FINISH---------")
 
 def find_best_move(board, all_legal_moves, dest_set, player_turn, pieces_set, player1_set, player2_set, player3_set,
                    player4_set, player5_set, player6_set):
@@ -346,7 +346,7 @@ def alphabeta(board, depth, player, first_player, player1_set, player2_set, play
     scores = []
     moves = []
 
-    if player not in MAX_PLAYERS:
+    if player not in MIN_PLAYERS:
 
         for move in valid_moves:
 
@@ -412,31 +412,40 @@ def alphabeta(board, depth, player, first_player, player1_set, player2_set, play
 
 
 def calculate_board_score(player_turn, p1_pieces, p2_pieces, p3_pieces, p4_pieces, p5_pieces, p6_pieces):
-    p1_avg_distance = find_avg_distance(p1_pieces, player1_dest, 16, 12)
-    p2_avg_distance = find_avg_distance(p2_pieces, player2_dest, 4, 0)
-    p3_avg_distance = find_avg_distance(p3_pieces, player3_dest, 4, 24)
-    p4_avg_distance = find_avg_distance(p4_pieces, player4_dest, 12, 0)
-    p5_avg_distance = find_avg_distance(p5_pieces, player5_dest, 0, 12)
-    p6_avg_distance = find_avg_distance(p6_pieces, player6_dest, 12, 24)
+    p1_avg_distance, p1_max_distance = find_avg_distance(p1_pieces, player1_dest, 16, 12)
+    p2_avg_distance, p2_max_distance = find_avg_distance(p2_pieces, player2_dest, 4, 0)
+    p3_avg_distance, p3_max_distance = find_avg_distance(p3_pieces, player3_dest, 4, 24)
+    p4_avg_distance, p4_max_distance = find_avg_distance(p4_pieces, player4_dest, 12, 0)
+    p5_avg_distance, p5_max_distance = find_avg_distance(p5_pieces, player5_dest, 0, 12)
+    p6_avg_distance, p6_max_distance = find_avg_distance(p6_pieces, player6_dest, 12, 24)
     score = 0
     if player_turn == 1:
         piece_in_dest = [i for i in p1_pieces if i in player1_dest]
         pturn_avg_distance = p1_avg_distance
-        score = ((p2_avg_distance - pturn_avg_distance) +
-                 (p3_avg_distance - pturn_avg_distance)
-                 ) + len(piece_in_dest) * 100
+        ((p2_avg_distance - pturn_avg_distance) +
+         (p3_avg_distance - pturn_avg_distance) +
+         (p4_avg_distance - pturn_avg_distance) +
+         (p5_avg_distance - pturn_avg_distance) +
+         (p6_avg_distance - pturn_avg_distance)) / 5 + len(piece_in_dest) * 100
+        score = score - p1_max_distance/10
     elif player_turn == 2:
         piece_in_dest = [i for i in p2_pieces if i in player2_dest]
         pturn_avg_distance = p2_avg_distance
-        score = ((p1_avg_distance - pturn_avg_distance) +
-                 (p3_avg_distance - pturn_avg_distance)
-                 ) + len(piece_in_dest) * 100
+        ((p1_avg_distance - pturn_avg_distance) +
+         (p3_avg_distance - pturn_avg_distance) +
+         (p4_avg_distance - pturn_avg_distance) +
+         (p5_avg_distance - pturn_avg_distance) +
+         (p6_avg_distance - pturn_avg_distance)) / 5 + len(piece_in_dest) * 100
+        score = score - p2_max_distance/10
     elif player_turn == 3:
         piece_in_dest = [i for i in p3_pieces if i in player3_dest]
         pturn_avg_distance = p3_avg_distance
         score = ((p2_avg_distance - pturn_avg_distance) +
-                 (p1_avg_distance - pturn_avg_distance)
-                 ) + len(piece_in_dest) * 100
+                 (p1_avg_distance - pturn_avg_distance) +
+                 (p4_avg_distance - pturn_avg_distance) +
+                 (p5_avg_distance - pturn_avg_distance) +
+                 (p6_avg_distance - pturn_avg_distance)) + len(piece_in_dest) * 100
+        score = score - p3_max_distance/10
     elif player_turn == 4:
         piece_in_dest = [i for i in p4_pieces if i in player4_dest]
         pturn_avg_distance = p4_avg_distance
@@ -445,6 +454,7 @@ def calculate_board_score(player_turn, p1_pieces, p2_pieces, p3_pieces, p4_piece
                  (p1_avg_distance - pturn_avg_distance) +
                  (p5_avg_distance - pturn_avg_distance) +
                  (p6_avg_distance - pturn_avg_distance)) + len(piece_in_dest) * 100
+        score = score - p4_max_distance/10
     elif player_turn == 5:
         piece_in_dest = [i for i in p5_pieces if i in player5_dest]
         pturn_avg_distance = p5_avg_distance
@@ -453,6 +463,7 @@ def calculate_board_score(player_turn, p1_pieces, p2_pieces, p3_pieces, p4_piece
                  (p4_avg_distance - pturn_avg_distance) +
                  (p1_avg_distance - pturn_avg_distance) +
                  (p6_avg_distance - pturn_avg_distance)) + len(piece_in_dest) * 100
+        score = score - p5_max_distance/10
     elif player_turn == 6:
         piece_in_dest = [i for i in p6_pieces if i in player6_dest]
         pturn_avg_distance = p6_avg_distance
@@ -461,12 +472,13 @@ def calculate_board_score(player_turn, p1_pieces, p2_pieces, p3_pieces, p4_piece
                  (p4_avg_distance - pturn_avg_distance) +
                  (p5_avg_distance - pturn_avg_distance) +
                  (p1_avg_distance - pturn_avg_distance)) + len(piece_in_dest) * 100
-
+        score = score - p6_max_distance/10
     return score
 
 
 def find_avg_distance(p_pieces, p_dest, p_default_x, p_default_y):
     total_distance = 0
+    max_distance = 0
     dest_x = p_default_x
     dest_y = p_default_y
     for dest_piece in p_dest:
@@ -483,10 +495,11 @@ def find_avg_distance(p_pieces, p_dest, p_default_x, p_default_y):
         distance_diag = math.sqrt(((dest_x - x) ** 2) + ((transferd_dest_y - transfered_y) ** 2))
 
         total_distance = total_distance + distance_diag
-
+        if(max_distance < distance_diag):
+            max_distance = distance_diag
     avg_distance = total_distance / 10
 
-    return avg_distance
+    return avg_distance, max_distance
 
 
 def greedy(board, all_legal_moves, dest_set, player_turn, weight):
