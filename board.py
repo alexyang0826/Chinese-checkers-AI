@@ -293,7 +293,6 @@ def find_all_legal_moves(board, pieces_set, dest_set, invalid_set):
         valid_moves = check_moves(board, color_board, piece, 0, piece, valid_moves)
 
     moves_to_remove = []
-
     for valid_move in valid_moves:
         start_move = valid_move[0]
         end_move = valid_move[1]
@@ -306,7 +305,7 @@ def find_all_legal_moves(board, pieces_set, dest_set, invalid_set):
             start_diag = math.sqrt(((8 - start_move[0]) ** 2) + ((central_pos - transfered_start_y) ** 2))
             end_diag = math.sqrt(((8 - end_move[0]) ** 2) + ((central_pos - transfered_end_y) ** 2))
 
-            if start_diag > end_diag:
+            if start_diag >= end_diag:
                 moves_to_remove.append(valid_move)
 
     new_valid_moves = [i for i in valid_moves + moves_to_remove if i not in valid_moves or i not in moves_to_remove]
